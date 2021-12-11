@@ -13,6 +13,8 @@ Lines = file1.readlines()
 for i in range(len(Lines)):
     Lines[i] = Lines[i].strip()
 
+# kopiranje niza koji ce se menjati tokom rekurzije i threadova
+copyLines = Lines.copy()
 kaladonts = {}
 
 class allKaladonts:
@@ -30,7 +32,7 @@ def find_max_list(lista):
     list_len = [len(i) for i in lista]
     return max(list_len)
 
-# funckija za pronalazenje kaladonta
+# rekurzija za pronalazenje kaladonta
 def findWord(word, array, counter, firstWord):
     words = array.copy()
     for i in range(len(words)):
@@ -41,7 +43,7 @@ def findWord(word, array, counter, firstWord):
             findWord(words[i], filteredWords, 0, firstWord)
         else:
             continue
-
+# iz svih kaladonta izvuci najduzi niz
 def getLongestList(kaladonts):
     # pronadji index najduzeg niza
     listKal = [i.kaladont for i in kaladonts]
@@ -55,11 +57,12 @@ def getLongestList(kaladonts):
     for i in range(len(longestKaladont)):
         with open('kaladont.txt', 'a') as f:
             f.write(longestKaladont[i] + ' ')
-copyLines = Lines.copy()
+
 # za svaku rec u tekstu, proveravamo da li su prva dva slova jednaka zavrsetku prethodne reci.
 def main(Lines, threadCounter, kaladonts):
 
     for i in range(len(Lines)):
+        # ako ne postoji vise reci u nizu inicijalnih reci pronadji najduzi niz
         if(len(copyLines) < 1):
             getLongestList(kaladonts)
             break
@@ -68,10 +71,11 @@ def main(Lines, threadCounter, kaladonts):
             # izvuci rec 
             word = copyLines[0]
             copyLines.remove(word)
-            # pokreni funkciju za pronalazenje kaladonta
             print('Thread: ' + str(threadCounter) + ' - ' + word)
 
             kaladonts[word] = allKaladonts(word, [])
+            
+            # pokreni funkciju za pronalazenje kaladonta
             findWord(word, Lines, 0, word)
 
             print('Thread: ' + str(threadCounter) + ' - ' + word + ' - done')
